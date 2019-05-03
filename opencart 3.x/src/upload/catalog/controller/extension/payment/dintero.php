@@ -1,8 +1,8 @@
 <?php
 class ControllerExtensionPaymentDintero extends Controller {
 	
-    public $_url_token = 'https://api.dintero.com/v1/'; 
-    public $_url_checkout = 'https://checkout.dintero.com/v1/';
+    public $_url_token = 'https://api.dintero.com/v1/';
+    public $_url_checkout = 'https://checkout.api.dintero.com/v1/';
     
     public function index() {
         $this->load->language('extension/payment/dintero');
@@ -320,30 +320,8 @@ class ControllerExtensionPaymentDintero extends Controller {
     }
     
 	public function callback() {
+       
         $this->load->model('checkout/order');
-        if( isset($_GET['merchant_reference']) ){
-            $order_id = $_GET['merchant_reference'];    
-        } else {
-            $order_id = (int)$this->session->data['order_id'];                
-        }
-
-        if( isset( $_GET['error'] ) ) {
-            $this->session->data['error'] = 'Something went wrong with the payment flow.';
-            if( $_GET['error'] == 'cancelled' ){
-                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
-                $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_customer_cancelled_status_id'), '', true);
-            }
-            if( $_GET['error'] == 'authorization' ){
-                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
-                $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_customer_failed_status_id'), '', true);
-            }          
-            if( $_GET['error'] == 'failed' ){
-                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
-                $this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_rejected_by_dintero_status_id'), '', true);
-            }                     
-            $this->response->redirect($this->url->link('checkout/checkout', '', true));
-        }
-
         $json = array();
         $access_token = $this->get_access_token();  
         if( isset($access_token['error']) ){
@@ -355,10 +333,13 @@ class ControllerExtensionPaymentDintero extends Controller {
             $json['error'] = 'Unknown error!'."\r\n".'Contact to store owner!';
         }
         
-        if( $json ){
-            $this->session->data['error'] = $json['error'];
+        if( $json || isset( $_GET['error'] ) ) {
+            $this->response->addHeader('Content-Type: application/json');
+            $this->response->setOutput(json_encode($json));
+            if(!$_GET['error'] )
+                $this->session->data['error'] = $json['error'];
             $this->response->redirect($this->url->link('checkout/checkout', '', true));
-            return;
+            
         }
         
         $transaction_info = $this->TransactionInfo($access_token,$_GET['transaction_id']);     

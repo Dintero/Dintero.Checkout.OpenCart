@@ -28,10 +28,6 @@ $_['entry_total']					 = 'Total';
 $_['entry_title']					 = 'Title';
 
 
-$_['entry_customer_cancelled_status']  = 'Customer cancelled the checkout payment Status';
-$_['entry_customer_failed_status']     = 'Customer failed to authorize the payment Status';
-$_['entry_rejected_by_dintero_status'] = 'The transaction has been rejected by Dintero, or an error has occurred during transaction processing Status';
-	
 $_['entry_authorized_status']        = 'Authorized transaction Status';
 $_['entry_captured_status']          = 'Captured transaction Status';
 $_['entry_refunded_status']          = 'Refunded transaction Status';
