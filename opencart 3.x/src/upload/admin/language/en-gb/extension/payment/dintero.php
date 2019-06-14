@@ -28,6 +28,10 @@ $_['entry_total']					 = 'Total';
 $_['entry_title']					 = 'Title';
 
 
+$_['entry_customer_cancelled_status']  = 'Customer cancelled the checkout payment Status';
+$_['entry_customer_failed_status']     = 'Customer failed to authorize the payment Status';
+$_['entry_rejected_by_dintero_status'] = 'The transaction has been rejected by Dintero, or an error has occurred during transaction processing Status';
+	
 $_['entry_authorized_status']        = 'Authorized transaction Status';
 $_['entry_captured_status']          = 'Captured transaction Status';
 $_['entry_refunded_status']          = 'Refunded transaction Status';
@@ -60,3 +64,7 @@ $_['error_payment_profile_id']  	 = 'Payment Profile ID required!';
 $_['error_payment_profile_id_test']  = 'Payment Profile ID (test) required!';
 $_['error_account_id']  	         = 'Account ID required!';
 $_['error_title']  	                 = 'Title required!';
+
+$_['error_client_id_test']           = 'Client ID (test) required!';
+$_['error_payment_client_secret_test']   = 'Client Secret (test) required!';
+$_['error_payment_profile_id_test']   = 'Payment Profile ID (test)!';

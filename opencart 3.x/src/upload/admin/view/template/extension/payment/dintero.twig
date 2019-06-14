@@ -31,7 +31,7 @@
           </ul>
           <div class="tab-content">
             <div class="tab-pane active" id="tab-general">
-              <div class="form-group required">
+              <div class="form-group ">
                 <label class="col-sm-3 control-label" for="payment_dintero_client_id">{{ entry_client_id }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_id" value="{{ payment_dintero_client_id }}" placeholder="{{ entry_client_id }}" id="payment_dintero_client_id" class="form-control"/>
@@ -41,7 +41,7 @@
                 </div>
               </div>    
               
-              <div class="form-group required">
+              <div class="form-group ">
                 <label class="col-sm-3 control-label" for="payment_dintero_client_secret">{{ entry_client_secret }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_secret" value="{{ payment_dintero_client_secret }}" placeholder="{{ entry_client_secret }}" id="payment_dintero_client_secret" class="form-control"/>
@@ -51,7 +51,7 @@
                 </div>
               </div>   
               
-              <div class="form-group required">
+              <div class="form-group ">
                 <label class="col-sm-3 control-label" for="payment_dintero_payment_profile_id">{{ entry_payment_profile_id }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_payment_profile_id" value="{{ payment_dintero_payment_profile_id }}" placeholder="{{ entry_payment_profile_id }}" id="payment_dintero_payment_profile_id" class="form-control"/>
@@ -65,6 +65,9 @@
                 <label class="col-sm-3 control-label" for="payment_dintero_client_id">{{ entry_client_id_test }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_id_test" value="{{ payment_dintero_client_id_test }}" placeholder="{{ entry_client_id_test }}" id="payment_dintero_client_id_test" class="form-control"/>
+                    {% if error_payment_client_id_test %}
+                    <div class="text-danger">{{ error_payment_client_id_test }}</div>
+                    {% endif %}
                 </div>
               </div>               
               
@@ -72,10 +75,13 @@
                 <label class="col-sm-3 control-label" for="payment_dintero_client_secret_test">{{ entry_client_secret_test }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_secret_test" value="{{ payment_dintero_client_secret_test }}" placeholder="{{ entry_client_secret_test }}" id="payment_dintero_client_secret_test" class="form-control"/>
+                    {% if error_payment_client_secret_test %}
+                    <div class="text-danger">{{ error_payment_client_secret_test }}</div>
+                    {% endif %}
                 </div>
               </div>                                                    
             
-              <div class="form-group required">
+              <div class="form-group ">
                 <label class="col-sm-3 control-label" for="payment_dintero_payment_profile_id_test">{{ entry_payment_profile_id_test }}</label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_payment_profile_id_test" value="{{ payment_dintero_payment_profile_id_test }}" placeholder="{{ entry_payment_profile_id_test }}" id="payment_dintero_payment_profile_id_test" class="form-control"/>
@@ -319,9 +325,9 @@
               <div class="form-group">
                 <label class="col-sm-3 control-label" for="input-_partially_refunded-status">{{ entry_partially_refunded_status }}</label>
                 <div class="col-sm-9">
-                  <select name="payment_dintero__partially_refunded_status_id" id="input-_partially_refunded-status" class="form-control">
+                  <select name="payment_dintero_partially_refunded_status_id" id="input-partially_refunded-status" class="form-control">
                     {% for order_status in order_statuses %}
-                    {% if order_status.order_status_id == payment_dintero__partially_refunded_status_id %}
+                    {% if order_status.order_status_id == payment_dintero_partially_refunded_status_id %}
                     <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
                     {% else %}
                     <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
@@ -330,6 +336,51 @@
                   </select>
                 </div>
               </div>                  
+              
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-_partially_refunded-status">{{ entry_customer_cancelled_status }}</label>
+                <div class="col-sm-9">
+                  <select name="payment_dintero_customer_cancelled_status_id" id="input-payment_dintero_customer_cancelled_status_id" class="form-control">
+                    {% for order_status in order_statuses %}
+                    {% if order_status.order_status_id == payment_dintero_customer_cancelled_status_id %}
+                    <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                    {% else %}
+                    <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>               
+              
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-_partially_refunded-status">{{ entry_customer_failed_status }}</label>
+                <div class="col-sm-9">
+                  <select name="payment_dintero_customer_failed_status_id" id="input-payment_dintero_customer_failed_status_id" class="form-control">
+                    {% for order_status in order_statuses %}
+                    {% if order_status.order_status_id == payment_dintero_customer_failed_status_id %}
+                    <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                    {% else %}
+                    <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>                
+              
+              <div class="form-group">
+                <label class="col-sm-3 control-label" for="input-_partially_refunded-status">{{ entry_rejected_by_dintero_status }}</label>
+                <div class="col-sm-9">
+                  <select name="payment_dintero_rejected_by_dintero_status_id" id="input-payment_dintero_customer_failed_status_id" class="form-control">
+                    {% for order_status in order_statuses %}
+                    {% if order_status.order_status_id == payment_dintero_rejected_by_dintero_status_id %}
+                    <option value="{{ order_status.order_status_id }}" selected="selected">{{ order_status.name }}</option>
+                    {% else %}
+                    <option value="{{ order_status.order_status_id }}">{{ order_status.name }}</option>
+                    {% endif %}
+                    {% endfor %}
+                  </select>
+                </div>
+              </div>                   
               
             </div>
           </div>

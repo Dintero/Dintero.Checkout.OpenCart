@@ -64,3 +64,9 @@ $_['error_payment_profile_id']  	 = 'Payment Profile ID required!';
 $_['error_payment_profile_id_test']  = 'Payment Profile ID (test) required!';
 $_['error_account_id']  	         = 'Account ID required!';
 $_['error_title']  	                 = 'Title required!';
+
+$_['error_client_id_test']           = 'Client ID (test) required!';
+$_['error_payment_client_secret_test']   = 'Client Secret (test) required!';
+$_['error_payment_profile_id_test']   = 'Payment Profile ID (test)!';
+
+

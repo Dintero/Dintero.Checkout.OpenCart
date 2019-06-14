@@ -126,6 +126,12 @@ class ControllerExtensionPaymentDintero extends Controller {
 		} else {
 			$data['payment_dintero_client_id_test'] = $this->config->get('payment_dintero_client_id_test');
 		}
+        
+		if (isset($this->error['payment_client_secret_test'])) {
+			$data['error_payment_client_secret_test'] = $this->error['payment_client_secret_test'];
+		} else {
+			$data['error_payment_client_secret_test'] = '';
+		}          
 
 		if (isset($this->request->post['payment_dintero_title'])) {
 			$data['payment_dintero_title'] = $this->request->post['payment_dintero_title'];
@@ -135,6 +141,11 @@ class ControllerExtensionPaymentDintero extends Controller {
             $data['payment_dintero_title'] = 'Dintero';
 		}
 
+		if (isset($this->error['payment_client_id_test'])) {
+			$data['error_payment_client_id_test'] = $this->error['payment_client_id_test'];
+		} else {
+			$data['error_payment_client_id_test'] = '';
+		}  
 
 		if (isset($this->request->post['payment_dintero_client_secret'])) {
 			$data['payment_dintero_client_secret'] = $this->request->post['payment_dintero_client_secret'];
@@ -244,8 +255,24 @@ class ControllerExtensionPaymentDintero extends Controller {
 		} else {
 			$data['payment_dintero_partially_refunded_status_id'] = $this->config->get('payment_dintero_partially_refunded_status_id');
 		}
+        
+		if (isset($this->request->post['payment_dintero_customer_cancelled_status_id'])) {
+			$data['payment_dintero_customer_cancelled_status_id'] = $this->request->post['payment_dintero_customer_cancelled_status_id'];
+		} else {
+			$data['payment_dintero_customer_cancelled_status_id'] = $this->config->get('payment_dintero_customer_cancelled_status_id');
+		}        
 
-
+		if (isset($this->request->post['payment_dintero_customer_failed_status_id'])) {
+			$data['payment_dintero_customer_failed_status_id'] = $this->request->post['payment_dintero_customer_failed_status_id'];
+		} else {
+			$data['payment_dintero_customer_failed_status_id'] = $this->config->get('payment_dintero_customer_failed_status_id');
+		}   
+        
+		if (isset($this->request->post['payment_dintero_rejected_by_dintero_status_id'])) {
+			$data['payment_dintero_rejected_by_dintero_status_id'] = $this->request->post['payment_dintero_rejected_by_dintero_status_id'];
+		} else {
+			$data['payment_dintero_rejected_by_dintero_status_id'] = $this->config->get('payment_dintero_rejected_by_dintero_status_id');
+		}           
 
 		$this->load->model('localisation/order_status');
 
@@ -282,23 +309,35 @@ class ControllerExtensionPaymentDintero extends Controller {
 
 	private function validate() {
 		if (!$this->user->hasPermission('modify', 'extension/payment/dintero')) {
-			$this->error['warning'] = $this->language->get('error_permission');
+			//$this->error['warning'] = $this->language->get('error_permission');
 		}
 
-		if (!$this->request->post['payment_dintero_client_id']) {
-			$this->error['client_id'] = $this->language->get('error_client_id');
-		}
-
-		if (!$this->request->post['payment_dintero_client_secret']) {
-			$this->error['client_secret'] = $this->language->get('error_client_secret');
-		}
+        if( (int)$this->request->post['payment_dintero_test'] == 0 ){
+    		if (!$this->request->post['payment_dintero_client_id']) {
+    			$this->error['client_id'] = $this->language->get('error_client_id');
+    		}
+    		if (!$this->request->post['payment_dintero_client_secret']) {
+    			$this->error['client_secret'] = $this->language->get('error_client_secret');
+    		}
+    		if (!$this->request->post['payment_dintero_payment_profile_id']) {
+    			$this->error['payment_profile_id'] = $this->language->get('error_payment_profile_id');
+    		}  
+        }
         
-		if (!$this->request->post['payment_dintero_payment_profile_id']) {
-			$this->error['payment_profile_id'] = $this->language->get('error_payment_profile_id');
-		}  
+        if( (int)$this->request->post['payment_dintero_test'] == 1 ){
+    		if (!$this->request->post['payment_dintero_client_id_test']) {
+    			$this->error['payment_client_id_test'] = $this->language->get('error_client_id_test');
+    		}
+    		if (!$this->request->post['payment_dintero_client_secret_test']) {
+    			$this->error['payment_client_secret_test'] = $this->language->get('error_payment_client_secret_test');
+    		}                              
+    		if (!$this->request->post['payment_dintero_payment_profile_id_test']) {
+    			$this->error['payment_profile_id_test'] = $this->language->get('error_payment_profile_id_test');
+    		}               
+        }   
         
 		if (!$this->request->post['payment_dintero_payment_profile_id_test']) {
-			$this->error['payment_profile_id_test'] = $this->language->get('error_payment_profile_id_test');
+			//$this->error['payment_profile_id_test'] = $this->language->get('error_payment_profile_id_test');
 		}         
               
 		if (!$this->request->post['payment_dintero_account_id']) {

@@ -65,6 +65,9 @@
                 <label class="col-sm-3 control-label" for="payment_dintero_client_id"><?php echo $entry_client_id_test ?></label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_id_test" value="<?php echo $payment_dintero_client_id_test ?>" placeholder="<?php echo $entry_client_id_test ?>" id="payment_dintero_client_id_test" class="form-control"/>
+                    <?php if ($error_payment_client_id_test) { ?>
+                    <div class="text-danger"><?php echo $error_payment_client_id_test ?></div>
+                    <?php } ?>
                 </div>
               </div>               
               
@@ -72,6 +75,10 @@
                 <label class="col-sm-3 control-label" for="payment_dintero_client_secret_test"><?php echo $entry_client_secret_test ?></label>
                 <div class="col-sm-9">
                     <input type="text" name="payment_dintero_client_secret_test" value="<?php echo $payment_dintero_client_secret_test ?>" placeholder="<?php echo $entry_client_secret_test ?>" id="payment_dintero_client_secret_test" class="form-control"/>
+                    <?php if ($error_payment_client_secret_test) { ?>
+                    <div class="text-danger"><?php echo $error_payment_client_secret_test ?></div>
+                    <?php } ?>                    
+                    
                 </div>
               </div>                                                    
             

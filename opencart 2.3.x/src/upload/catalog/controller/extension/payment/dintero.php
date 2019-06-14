@@ -1,8 +1,11 @@
 <?php
 class ControllerExtensionPaymentDintero extends Controller {
 	
-    public $_url_token = 'https://api.dintero.com/v1/'; 
-    public $_url_checkout = 'https://checkout.dintero.com/v1/';
+//    public $_url_token = 'https://test.dintero.com/v1/'; 
+//    public $_url_checkout = 'https://checkout.test.dintero.com/v1/';
+    public $_url_token = 'https://api.dintero.com/v1/';
+    //public $_url_checkout = 'https://checkout.api.dintero.com/v1/';    
+    public $_url_checkout = 'https://checkout.dintero.com/v1/';   
     
     public function index() {
         $this->load->language('extension/payment/dintero');
@@ -41,7 +44,9 @@ class ControllerExtensionPaymentDintero extends Controller {
         $this->load->model('checkout/order');
         $this->load->model('catalog/product');
 		$order_info = $this->model_checkout_order->getOrder($this->session->data['order_id']);
+        
         $order_products = $this->getOrderProducts($this->session->data['order_id']);
+        
         $order_totals = $this->getOrderTotals($this->session->data['order_id']);
         
         $tax_all = 0;
@@ -105,7 +110,7 @@ class ControllerExtensionPaymentDintero extends Controller {
 
             $_porducts.= ' {
                         "id": "'.(int)$pr_c.'",
-                        "line_id": "'.$order_product['product_id'].'",
+                        "line_id": "'.$order_product['order_product_id'].'",
                         "description": "'.$order_product['name'].'",
                         "quantity": '.(int)$order_product['quantity'].',
                         "amount": '.(int)$pr_price.',
@@ -400,7 +405,7 @@ class ControllerExtensionPaymentDintero extends Controller {
         foreach($order_products AS $p=>$order_product){  
             $pr_price = (($order_product['price']+$order_product['tax'])*$order_product['quantity'])*100;
             $pr_price = number_format($pr_price,0,'','');            
-            $_porducts.= '{"line_id": "'.$order_product['product_id'].'","amount": '.(int)$pr_price.'},';
+            $_porducts.= '{"line_id": "'.$order_product['order_product_id'].'","amount": '.(int)$pr_price.'},';
             $total_product+= $pr_price;
             break;
         }   
@@ -565,6 +570,20 @@ class ControllerExtensionPaymentDintero extends Controller {
         $err = curl_error($curl);
         curl_close($curl);
         
+        /*echo '<pre>';print_r(array(
+          CURLOPT_URL => $_url.'/auth/token',
+          CURLOPT_RETURNTRANSFER => true,
+          CURLOPT_ENCODING => "",
+          CURLOPT_MAXREDIRS => 10,
+          CURLOPT_TIMEOUT => 30,
+          CURLOPT_HTTP_VERSION => CURL_HTTP_VERSION_1_1,
+          CURLOPT_CUSTOMREQUEST => "POST",
+          CURLOPT_POSTFIELDS => json_encode($req),
+          CURLOPT_HTTPHEADER => array(
+            "Authorization: Basic ".base64_encode($_payment_dintero_client_id.":".$_payment_dintero_client_secret),
+            "Content-Type: application/json",
+            "cache-control: no-cache"
+          ) ));echo '</pre>';//exit();*/
         if ($err) {
             return array(
                 'error'      => true,
@@ -572,6 +591,7 @@ class ControllerExtensionPaymentDintero extends Controller {
             );          
         } else {
             $response = json_decode( $response, true );
+            
             if( isset($response['error']) ){
                 return array(
                     'error'      => true,

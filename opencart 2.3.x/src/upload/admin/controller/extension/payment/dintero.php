@@ -48,7 +48,16 @@ class ControllerExtensionPaymentDintero extends Controller {
 
 		if (($this->request->server['REQUEST_METHOD'] == 'POST') && $this->validate()) {
           
-			$this->model_setting_setting->editSetting('dintero', $this->request->post);
+			//$this->model_setting_setting->editSetting('payment_dintero', $this->request->post);
+    	    $this->db->query("DELETE FROM `" . DB_PREFIX . "setting` WHERE store_id = '0' AND `code` LIKE '%dintero%'");
+            
+    		foreach ($this->request->post as $key => $value) {
+    				if (!is_array($value)) {
+    					$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'dintero', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape($value) . "'");
+    				} else {
+    					$this->db->query("INSERT INTO " . DB_PREFIX . "setting SET store_id = '0', `code` = 'dintero', `key` = '" . $this->db->escape($key) . "', `value` = '" . $this->db->escape(json_encode($value, true)) . "', serialized = '1'");
+    				}
+    		}
 
 			$this->session->data['success'] = $this->language->get('text_success');
 
@@ -84,6 +93,18 @@ class ControllerExtensionPaymentDintero extends Controller {
 		} else {
 			$data['error_payment_profile_id'] = '';
 		}                    
+
+		if (isset($this->error['payment_client_secret_test'])) {
+			$data['error_payment_client_secret_test'] = $this->error['payment_client_secret_test'];
+		} else {
+			$data['error_payment_client_secret_test'] = '';
+		}  
+
+		if (isset($this->error['payment_client_id_test'])) {
+			$data['error_payment_client_id_test'] = $this->error['payment_client_id_test'];
+		} else {
+			$data['error_payment_client_id_test'] = '';
+		}  
 
 		if (isset($this->error['payment_profile_id_test'])) {
 			$data['error_payment_profile_id_test'] = $this->error['payment_profile_id_test'];
@@ -303,22 +324,30 @@ class ControllerExtensionPaymentDintero extends Controller {
 		/*if (!$this->user->hasPermission('modify', 'extension/payment/dintero')) {
 			$this->error['warning'] = $this->language->get('error_permission');
 		}*/
-
-		if (!$this->request->post['payment_dintero_client_id']) {
-			//$this->error['client_id'] = $this->language->get('error_client_id');
-		}
-
-		if (!$this->request->post['payment_dintero_client_secret']) {
-			//$this->error['client_secret'] = $this->language->get('error_client_secret');
-		}
         
-		if (!$this->request->post['payment_dintero_payment_profile_id']) {
-			//$this->error['payment_profile_id'] = $this->language->get('error_payment_profile_id');
-		}  
+        if( (int)$this->request->post['payment_dintero_test'] == 0 ){
+    		if (!$this->request->post['payment_dintero_client_id']) {
+    			$this->error['client_id'] = $this->language->get('error_client_id');
+    		}
+    		if (!$this->request->post['payment_dintero_client_secret']) {
+    			$this->error['client_secret'] = $this->language->get('error_client_secret');
+    		}
+    		if (!$this->request->post['payment_dintero_payment_profile_id']) {
+    			$this->error['payment_profile_id'] = $this->language->get('error_payment_profile_id');
+    		}  
+        }
         
-		if (!$this->request->post['payment_dintero_payment_profile_id_test']) {
-		//	$this->error['payment_profile_id_test'] = $this->language->get('error_payment_profile_id_test');
-		}         
+        if( (int)$this->request->post['payment_dintero_test'] == 1 ){
+    		if (!$this->request->post['payment_dintero_client_id_test']) {
+    			$this->error['payment_client_id_test'] = $this->language->get('error_client_id_test');
+    		}
+    		if (!$this->request->post['payment_dintero_client_secret_test']) {
+    			$this->error['payment_client_secret_test'] = $this->language->get('error_payment_client_secret_test');
+    		}                              
+    		if (!$this->request->post['payment_dintero_payment_profile_id_test']) {
+    			$this->error['payment_profile_id_test'] = $this->language->get('error_payment_profile_id_test');
+    		}               
+        }              
               
 		if (!$this->request->post['payment_dintero_account_id']) {
 			$this->error['account_id'] = $this->language->get('error_account_id');

@@ -2,7 +2,7 @@
 class ControllerExtensionPaymentDintero extends Controller {
 	
     public $_url_token = 'https://api.dintero.com/v1/';
-    public $_url_checkout = 'https://checkout.api.dintero.com/v1/';
+    public $_url_checkout = 'https://checkout.dintero.com/v1/';   
     
     public function index() {
         $this->load->language('extension/payment/dintero');
@@ -104,7 +104,7 @@ class ControllerExtensionPaymentDintero extends Controller {
 
             $_porducts.= ' {
                         "id": "'.(int)$pr_c.'",
-                        "line_id": "'.$order_product['product_id'].'",
+                        "line_id": "'.$order_product['order_product_id'].'",
                         "description": "'.$order_product['name'].'",
                         "quantity": '.(int)$order_product['quantity'].',
                         "amount": '.(int)$pr_price.',
@@ -315,13 +315,40 @@ class ControllerExtensionPaymentDintero extends Controller {
             case 'PARTIALLY_REFUNDED':
 				$order_status_id = $this->config->get('payment_dintero_partially_refunded_status_id');
 				break;                           
-        }   
-        $this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', true);        
+        }  
+        $order_info = $this->model_checkout_order->getOrder($order_id);
+        if( $order_info['email'] ){ 
+            $this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', true);
+        } else {
+            $this->model_checkout_order->addOrderHistory($order_id, $order_status_id, '', false);
+        }       
     }
     
 	public function callback() {
-       
         $this->load->model('checkout/order');
+        if( isset($_GET['merchant_reference']) ){
+            $order_id = $_GET['merchant_reference'];    
+        } else {
+            $order_id = (int)$this->session->data['order_id'];                
+        }
+
+        if( isset( $_GET['error'] ) ) {
+            $this->session->data['error'] = 'Something went wrong with the payment flow.';
+            if( $_GET['error'] == 'cancelled' ){
+                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
+                //$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_customer_cancelled_status_id'), '', true);
+            }
+            if( $_GET['error'] == 'authorization' ){
+                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
+                //$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_customer_failed_status_id'), '', true);
+            }          
+            if( $_GET['error'] == 'failed' ){
+                $this->SaveTransactionStatus($order_id, 'ERROR_'.strtoupper( $_GET['error']) );
+                //$this->model_checkout_order->addOrderHistory($order_id, $this->config->get('payment_dintero_rejected_by_dintero_status_id'), '', true);
+            }                     
+            $this->response->redirect($this->url->link('checkout/checkout', '', true));
+        }
+
         $json = array();
         $access_token = $this->get_access_token();  
         if( isset($access_token['error']) ){
@@ -333,13 +360,10 @@ class ControllerExtensionPaymentDintero extends Controller {
             $json['error'] = 'Unknown error!'."\r\n".'Contact to store owner!';
         }
         
-        if( $json || isset( $_GET['error'] ) ) {
-            $this->response->addHeader('Content-Type: application/json');
-            $this->response->setOutput(json_encode($json));
-            if(!$_GET['error'] )
-                $this->session->data['error'] = $json['error'];
+        if( $json ){
+            $this->session->data['error'] = $json['error'];
             $this->response->redirect($this->url->link('checkout/checkout', '', true));
-            
+            return;
         }
         
         $transaction_info = $this->TransactionInfo($access_token,$_GET['transaction_id']);     
@@ -380,7 +404,7 @@ class ControllerExtensionPaymentDintero extends Controller {
         foreach($order_products AS $p=>$order_product){  
             $pr_price = (($order_product['price']+$order_product['tax'])*$order_product['quantity'])*100;
             $pr_price = number_format($pr_price,0,'','');            
-            $_porducts.= '{"line_id": "'.$order_product['product_id'].'","amount": '.(int)$pr_price.'},';
+            $_porducts.= '{"line_id": "'.$order_product['order_product_id'].'","amount": '.(int)$pr_price.'},';
             $total_product+= $pr_price;
             break;
         }   
