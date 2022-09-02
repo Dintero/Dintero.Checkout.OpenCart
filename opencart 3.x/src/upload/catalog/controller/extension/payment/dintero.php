@@ -105,7 +105,7 @@ class ControllerExtensionPaymentDintero extends Controller {
             $_porducts.= ' {
                         "id": "'.(int)$pr_c.'",
                         "line_id": "'.$order_product['order_product_id'].'",
-                        "description": "'.$order_product['name'].'",
+                        "description": "'.htmlspecialchars($order_product['name']).'",
                         "quantity": '.(int)$order_product['quantity'].',
                         "amount": '.(int)$pr_price.',
                         "vat_amount": '. number_format($order_product['tax']*100,0,'','').',
